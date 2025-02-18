@@ -52,6 +52,10 @@ export interface EventSourceOptions {
   /** Callback that fires each time the connection is established (multiple times in the case of reconnects). */
   onConnect?: () => void
 
+  // addition
+  // https://github.com/rexxars/eventsource-client/issues/8
+  onConnectionError?: (error: Error, statusCode?: number) => void
+
   /** Callback that fires each time we schedule a new reconnect attempt. Will include an object with information on how many milliseconds it will attempt to delay before doing the reconnect. */
   onScheduleReconnect?: (info: {delay: number}) => void
 

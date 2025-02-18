@@ -32,11 +32,21 @@ export function createEventSource(
   optionsOrUrl: EventSourceOptions | string | URL,
   {getStream}: EnvAbstractions,
 ): EventSourceClient {
+  console.log(
+    'createEventSource called!!!!!!!!!!!!!!!!!!!!!!!!!!!!! for real??????????? LIBRARY LIBRARY ',
+  )
+
   const options =
     typeof optionsOrUrl === 'string' || optionsOrUrl instanceof URL
       ? {url: optionsOrUrl}
       : optionsOrUrl
-  const {onMessage, onConnect = noop, onDisconnect = noop, onScheduleReconnect = noop} = options
+  const {
+    onMessage,
+    onConnect = noop,
+    onDisconnect = noop,
+    onScheduleReconnect = noop,
+    onConnectionError = noop,
+  } = options
   const {fetch, url, initialLastEventId} = validate(options)
   const requestHeaders = {...options.headers} // Prevent post-creation mutations to headers
 
@@ -93,6 +103,8 @@ export function createEventSource(
         if (err.name === 'AbortError' || err.type === 'aborted') {
           return
         }
+
+        onConnectionError(err)
 
         scheduleReconnect()
       })
@@ -184,6 +196,12 @@ export function createEventSource(
       onDisconnect()
       close()
       return
+    }
+
+    if (status >= 400) {
+      // todo better and more informative errors for the user
+      // todo parse error body for more info
+      throw new Error(`Unable to connect with HTTP status ${status}`)
     }
 
     if (!body) {
