@@ -12,9 +12,23 @@ jobs:
           node-version: '18'
       - run: npm install
       - run: npm run build
-      - name: Deploy to built branch
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: built
+      - name: Prepare built branch content
+        run: |
+          # Create a temporary directory for the built content
+          mkdir built-tmp
+          # Copy the dist directory
+          cp -r dist built-tmp/
+          # Copy package.json
+          cp package.json built-tmp/
+          # Move into the temporary directory
+          cd built-tmp
+          # Initialize git and create a commit
+          git init
+          git add .
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git commit -m "Build for commit $GITHUB_SHA"
+      - name: Push to built branch
+        run: |
+          cd built-tmp
+          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:built
