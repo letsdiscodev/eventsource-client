@@ -28,7 +28,9 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           git commit -m "Build for commit $GITHUB_SHA"
-      - name: Push to built branch
-        run: |
-          cd built-tmp
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:built
+      - name: Deploy to built branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./built-tmp
+          publish_branch: built
