@@ -32,10 +32,6 @@ export function createEventSource(
   optionsOrUrl: EventSourceOptions | string | URL,
   {getStream}: EnvAbstractions,
 ): EventSourceClient {
-  console.log(
-    'createEventSource called!!!!!!!!!!!!!!!!!!!!!!!!!!!!! for real??????????? LIBRARY LIBRARY ',
-  )
-
   const options =
     typeof optionsOrUrl === 'string' || optionsOrUrl instanceof URL
       ? {url: optionsOrUrl}
